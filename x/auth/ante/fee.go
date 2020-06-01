@@ -59,6 +59,9 @@ func (mfd MempoolFeeDecorator) AnteHandle(ctx sdk.Context, tx sdk.Tx, simulate b
 				requiredFees[i] = sdk.NewCoin(gp.Denom, fee.Ceil().RoundInt())
 			}
 
+			fmt.Printf("------------fee coins   :  %v  \n", feeCoins)
+			fmt.Printf("------------requiredFees:  %v  \n", requiredFees)
+
 			if !feeCoins.IsAnyGTE(requiredFees) {
 				return ctx, sdkerrors.Wrapf(sdkerrors.ErrInsufficientFee, "insufficient fees; got: %s required: %s", feeCoins, requiredFees)
 			}

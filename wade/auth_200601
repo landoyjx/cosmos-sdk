@@ -1,0 +1,22 @@
+
+进度：
+
+1. 打印cosmos sdk runTx 的参数；
+
+2. 调试了Fee  Price  GasLimit  MinGasPrices机制；
+
+   GasLimit  Price或Fee由前段构建交易的时候指定， Price会在前端转成Fee；
+   MinGasPrices ethermint没有启用。
+
+3. 尝试了 genesis add-genesis-account 时不指定stake币种，是不能启动的； stake模块里指定了stake币种。
+
+
+
+暂时忽略：
+
+   auth模块围绕着ante调试的，其他的机制暂时跳过；
+
+
+需要进一步的了解：
+
+   先尝试stake模块，抛开上层的应用，链上的业务大部分都是围绕着这个模块； 先弄这个模块，有利于下一步部署。
