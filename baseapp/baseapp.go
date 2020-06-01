@@ -1,6 +1,7 @@
 package baseapp
 
 import (
+	"encoding/json"
 	"errors"
 	"fmt"
 	"reflect"
@@ -136,18 +137,19 @@ func NewBaseApp(
 }
 
 func (app *BaseApp) String() string {
-	// indentBytes, err := json.MarshalIndent(app, "", "\t")
-	// if err != nil {
-	// 	app.Logger().With("wade", "cosmos sdk baseapp string json").Error(err.Error())
-	// }
+	indentBytes, err := json.MarshalIndent(app, "", "\t")
+	if err != nil {
+		app.Logger().With("wade", "cosmos sdk baseapp string json").Error(err.Error())
+	}
 
-	return fmt.Sprintf(`
-    Name          :  %v
-		checkState    :  %v
-		deliverState  :  %v
-    appVersion    :  %v
-		`, app.name, *app.checkState, app.deliverState, app.appVersion)
+	// return fmt.Sprintf(`
+	//   Name          :  %v
+	// 	checkState    :  %v
+	// 	deliverState  :  %v
+	//   appVersion    :  %v
+	// 	`,app.name,*app.checkState,app.deliverState,app.appVersion)
 
+	return string(indentBytes)
 }
 
 // Name returns the name of the BaseApp.
@@ -475,7 +477,7 @@ func (app *BaseApp) runTx(mode runTxMode, txBytes []byte, tx sdk.Tx) (gInfo sdk.
 	// determined by the GasMeter. We need access to the context to get the gas
 	// meter so we initialize upfront.
 
-	app.logger.With("wade", "cosmos sdk baseapp runTx baseapp", "mode", mode).Info(app.String())
+	//app.logger.With("wade", "cosmos sdk baseapp runTx baseapp", "mode", mode).Info(app.String())
 
 	var gasWanted uint64
 	ctx := app.getContextForTx(mode, txBytes)

@@ -58,8 +58,7 @@ func (c Context) MinGasPrices() DecCoins      { return c.minGasPrice }
 func (c Context) EventManager() *EventManager { return c.eventManager }
 
 func (c Context) String() string {
-	indentBytes, _ := json.MarshalIndent(&c, "", "\t")
-
+	indentBytes, _ := json.MarshalIndent(c, "", "\t")
 	return string(indentBytes)
 }
 
