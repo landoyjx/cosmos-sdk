@@ -58,8 +58,30 @@ func (c Context) MinGasPrices() DecCoins      { return c.minGasPrice }
 func (c Context) EventManager() *EventManager { return c.eventManager }
 
 func (c Context) String() string {
-	indentBytes, _ := json.MarshalIndent(c, "", "\t")
-	return string(indentBytes)
+	// indentBytes, _ := json.MarshalIndent(c, "", "\t")
+	// return string(indentBytes)
+
+	fmt.Sprintf(`
+
+		ctx           ：%v
+		ms            ：%v
+		header        ：%v
+		chainID       ：%v
+		txBytes       ：%v
+		voteInfo      ：%v
+		gasMeter      ：%v
+		blockGasMeter ：%v
+		checkTx       ：%v
+		recheckTx     ：%v
+		minGasPrice   ：%v
+		consParams    ：%v   
+		eventManager
+		`，c.ctx,c.ms.GetStoreType(),c.header,c.chainID,c.txBytes,c.voteInfo,c.gasMeter,c.blockGasMeter,c.checkTx,
+	 c.recheckTx,c.minGasPrice,*c.consParams)
+
+
+
+
 }
 
 // clone the header before returning
