@@ -68,14 +68,14 @@ func (c Context) String() string {
 		chainID       ：%v
 		txBytes       ：%v
 		voteInfo      ：%v
-		gasMeter      ：%v
+		gasMeter      ： limit  %v consumed: %v
 		blockGasMeter ：%v
 		checkTx       ：%v
 		recheckTx     ：%v
 		minGasPrice   ：%v
 		consParams    ：%v
 		eventManager
-		`, c.ctx, c.ms.GetStoreType(), c.header, c.chainID, c.txBytes, c.voteInfo, c.gasMeter, c.blockGasMeter, c.checkTx,
+		`, c.ctx, c.ms.GetStoreType(), c.header, c.chainID, c.txBytes, c.voteInfo, c.gasMeter.Limit(),c.gasMeter.GasConsumed(), c.blockGasMeter, c.checkTx,
 		c.recheckTx, c.minGasPrice, *c.consParams)
 
 }

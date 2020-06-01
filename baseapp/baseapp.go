@@ -574,6 +574,7 @@ func (app *BaseApp) runTx(mode runTxMode, txBytes []byte, tx sdk.Tx) (gInfo sdk.
 
 		// GasMeter expected to be set in AnteHandler
 		gasWanted = ctx.GasMeter().Limit()
+		app.logger.With("wade", "cosmos sdk baseapp  runTx antiHandler").Info(fmt.Sprintf("gasWanted:  %v  ctx.GasMeter().Limit()", gasWanted))
 
 		if err != nil {
 			return gInfo, nil, err
