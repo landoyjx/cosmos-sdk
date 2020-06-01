@@ -85,6 +85,8 @@ func NewDeductFeeDecorator(ak keeper.AccountKeeper, sk types.SupplyKeeper) Deduc
 }
 
 func (dfd DeductFeeDecorator) AnteHandle(ctx sdk.Context, tx sdk.Tx, simulate bool, next sdk.AnteHandler) (newCtx sdk.Context, err error) {
+
+	fmt.Println("+++++++++++++++++++++++++++++++++++++++")
 	feeTx, ok := tx.(FeeTx)
 	if !ok {
 		return ctx, sdkerrors.Wrap(sdkerrors.ErrTxDecode, "Tx must be a FeeTx")
@@ -104,7 +106,7 @@ func (dfd DeductFeeDecorator) AnteHandle(ctx sdk.Context, tx sdk.Tx, simulate bo
 	// deduct the fees
 	if !feeTx.GetFee().IsZero() {
 
-		fmt.Printf("wade ante handler feePayerAcc: %v  Fee: %v \n",feePayer,feeTx.GetFee())
+		fmt.Printf("----------------------------------wade ante handler feePayerAcc: %v  Fee: %v \n", feePayer, feeTx.GetFee())
 		err = DeductFees(dfd.supplyKeeper, ctx, feePayerAcc, feeTx.GetFee())
 		if err != nil {
 			return ctx, err
