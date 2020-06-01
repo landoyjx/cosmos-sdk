@@ -113,6 +113,8 @@ func (am AppModule) NewQuerierHandler() sdk.Querier {
 func (am AppModule) InitGenesis(ctx sdk.Context, cdc codec.JSONMarshaler, data json.RawMessage) []abci.ValidatorUpdate {
 	var genesisState GenesisState
 	cdc.MustUnmarshalJSON(data, &genesisState)
+	indentBytes, _ := json.MarshalIndent(&genesisState, "", "\t")
+	fmt.Printf("bank module genesis data:  %v \n",string(indentBytes))
 	InitGenesis(ctx, am.keeper, genesisState)
 	return []abci.ValidatorUpdate{}
 }

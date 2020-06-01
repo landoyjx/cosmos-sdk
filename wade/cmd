@@ -1,0 +1,11 @@
+
+add new  addr:   emintcli  keys  add  wade
+
+
+list all keys:   emintcli keys list
+
+
+query  amount by addr:     addr
+
+
+send token from addr to other: emintcli tx send [from_key_or_address] [to_address] [amount] [flags]

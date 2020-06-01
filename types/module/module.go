@@ -30,6 +30,7 @@ package module
 
 import (
 	"encoding/json"
+	"fmt"
 
 	"github.com/gorilla/mux"
 	"github.com/spf13/cobra"
@@ -259,11 +260,13 @@ func (m *Manager) RegisterRoutes(router sdk.Router, queryRouter sdk.QueryRouter)
 // InitGenesis performs init genesis functionality for modules
 func (m *Manager) InitGenesis(ctx sdk.Context, cdc codec.JSONMarshaler, genesisData map[string]json.RawMessage) abci.ResponseInitChain {
 	var validatorUpdates []abci.ValidatorUpdate
+	fmt.Printf("module manager init genesis---------------------------")
 	for _, moduleName := range m.OrderInitGenesis {
+		fmt.Printf("module Nmae:  %v \n", moduleName)
 		if genesisData[moduleName] == nil {
 			continue
 		}
-
+		fmt.Printf("module Nmae:  %v  not nil\n", moduleName)
 		moduleValUpdates := m.Modules[moduleName].InitGenesis(ctx, cdc, genesisData[moduleName])
 
 		// use these validator updates if provided, the module manager assumes
