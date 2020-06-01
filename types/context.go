@@ -2,6 +2,7 @@ package types
 
 import (
 	"context"
+	"encoding/json"
 	"time"
 
 	"github.com/gogo/protobuf/proto"
@@ -55,6 +56,11 @@ func (c Context) IsCheckTx() bool             { return c.checkTx }
 func (c Context) IsReCheckTx() bool           { return c.recheckTx }
 func (c Context) MinGasPrices() DecCoins      { return c.minGasPrice }
 func (c Context) EventManager() *EventManager { return c.eventManager }
+
+func (c Context) String() string {
+	indentBytes, _ := json.MarshalIndent(&c, "", "\t")
+	return string(indentBytes)
+}
 
 // clone the header before returning
 func (c Context) BlockHeader() abci.Header {

@@ -1,6 +1,7 @@
 package baseapp
 
 import (
+	"encoding/json"
 	"errors"
 	"fmt"
 	"reflect"
@@ -133,6 +134,11 @@ func NewBaseApp(
 	}
 
 	return app
+}
+
+func (app *BaseApp) String() string {
+	indentBytes, _ := json.MarshalIndent(app, "", "\t")
+	return string(indentBytes)
 }
 
 // Name returns the name of the BaseApp.
@@ -459,9 +465,13 @@ func (app *BaseApp) runTx(mode runTxMode, txBytes []byte, tx sdk.Tx) (gInfo sdk.
 	// NOTE: GasWanted should be returned by the AnteHandler. GasUsed is
 	// determined by the GasMeter. We need access to the context to get the gas
 	// meter so we initialize upfront.
-	var gasWanted uint64
 
+	app.logger.With("wade", "cosmos sdk baseapp runTx baseapp").Info(app.String())
+
+	var gasWanted uint64
 	ctx := app.getContextForTx(mode, txBytes)
+	app.logger.With("wade", "cosmos sdk baseapp runTx ctx").Info(ctx.String())
+
 	ms := ctx.MultiStore()
 
 	// only run the tx if there is block gas remaining
