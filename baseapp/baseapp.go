@@ -521,6 +521,8 @@ func (app *BaseApp) runTx(mode runTxMode, txBytes []byte, tx sdk.Tx) (gInfo sdk.
 		}
 
 		gInfo = sdk.GasInfo{GasWanted: gasWanted, GasUsed: ctx.GasMeter().GasConsumed()}
+		app.logger.With("wade", "cosmos sdk baseapp runTx ctx", "mode", mode).Info(fmt.Sprintf("GasWanted: %v   GasUsed: %v ", gasWanted, ctx.GasMeter()))
+
 	}()
 
 	// If BlockGasMeter() panics it will be caught by the above recover and will
