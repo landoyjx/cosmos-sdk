@@ -1,7 +1,6 @@
 package baseapp
 
 import (
-	"encoding/json"
 	"errors"
 	"fmt"
 	"reflect"
@@ -137,11 +136,18 @@ func NewBaseApp(
 }
 
 func (app *BaseApp) String() string {
-	indentBytes, err := json.MarshalIndent(app, "", "\t")
-	if err != nil {
-		app.Logger().With("wade", "cosmos sdk baseapp string json").Error(err.Error())
-	}
-	return string(indentBytes)
+	// indentBytes, err := json.MarshalIndent(app, "", "\t")
+	// if err != nil {
+	// 	app.Logger().With("wade", "cosmos sdk baseapp string json").Error(err.Error())
+	// }
+
+	return fmt.Sprintf(`
+    Name          :  %v
+		checkState    :  %v
+		deliverState  :  %v
+    appVersion    :  %v
+		`, app.name, *app.checkState, app.deliverState, app.appVersion)
+
 }
 
 // Name returns the name of the BaseApp.
