@@ -86,7 +86,7 @@ func NewDeductFeeDecorator(ak keeper.AccountKeeper, sk types.SupplyKeeper) Deduc
 
 func (dfd DeductFeeDecorator) AnteHandle(ctx sdk.Context, tx sdk.Tx, simulate bool, next sdk.AnteHandler) (newCtx sdk.Context, err error) {
 
-	fmt.Println("+++++++++++++++++++++++++++++++++++++++")
+	fmt.Println("DeductFeeDecorator +++++++++++++++++++++++++++++++++++++++")
 	feeTx, ok := tx.(FeeTx)
 	if !ok {
 		return ctx, sdkerrors.Wrap(sdkerrors.ErrTxDecode, "Tx must be a FeeTx")
@@ -102,11 +102,10 @@ func (dfd DeductFeeDecorator) AnteHandle(ctx sdk.Context, tx sdk.Tx, simulate bo
 	if feePayerAcc == nil {
 		return ctx, sdkerrors.Wrapf(sdkerrors.ErrUnknownAddress, "fee payer address: %s does not exist", feePayer)
 	}
-
+	fmt.Printf("----------------------------------wade ante handler feePayerAcc: %v  Fee: %v \n", feePayer, feeTx.GetFee())
 	// deduct the fees
 	if !feeTx.GetFee().IsZero() {
 
-		fmt.Printf("----------------------------------wade ante handler feePayerAcc: %v  Fee: %v \n", feePayer, feeTx.GetFee())
 		err = DeductFees(dfd.supplyKeeper, ctx, feePayerAcc, feeTx.GetFee())
 		if err != nil {
 			return ctx, err
