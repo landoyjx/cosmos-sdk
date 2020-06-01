@@ -137,7 +137,10 @@ func NewBaseApp(
 }
 
 func (app *BaseApp) String() string {
-	indentBytes, _ := json.MarshalIndent(app, "", "\t")
+	indentBytes, err := json.MarshalIndent(app, "", "\t")
+	if err != nil {
+		app.Logger().With("wade", "cosmos sdk baseapp string json").Error(err.Error())
+	}
 	return string(indentBytes)
 }
 
@@ -466,11 +469,11 @@ func (app *BaseApp) runTx(mode runTxMode, txBytes []byte, tx sdk.Tx) (gInfo sdk.
 	// determined by the GasMeter. We need access to the context to get the gas
 	// meter so we initialize upfront.
 
-	app.logger.With("wade", "cosmos sdk baseapp runTx baseapp").Info(app.String())
+	app.logger.With("wade", "cosmos sdk baseapp runTx baseapp", "mode", mode).Info(app.String())
 
 	var gasWanted uint64
 	ctx := app.getContextForTx(mode, txBytes)
-	app.logger.With("wade", "cosmos sdk baseapp runTx ctx").Info(ctx.String())
+	app.logger.With("wade", "cosmos sdk baseapp runTx ctx", "mode", mode).Info(ctx.String())
 
 	ms := ctx.MultiStore()
 

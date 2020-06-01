@@ -260,7 +260,7 @@ func (m *Manager) RegisterRoutes(router sdk.Router, queryRouter sdk.QueryRouter)
 // InitGenesis performs init genesis functionality for modules
 func (m *Manager) InitGenesis(ctx sdk.Context, cdc codec.JSONMarshaler, genesisData map[string]json.RawMessage) abci.ResponseInitChain {
 	var validatorUpdates []abci.ValidatorUpdate
-	fmt.Printf("module manager init genesis---------------------------")
+	fmt.Printf("module manager init genesis---------------------------\n")
 	for _, moduleName := range m.OrderInitGenesis {
 		fmt.Printf("module Nmae:  %v \n", moduleName)
 		if genesisData[moduleName] == nil {

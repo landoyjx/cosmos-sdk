@@ -5,7 +5,10 @@ add new  addr:   emintcli  keys  add  wade
 list all keys:   emintcli keys list
 
 
-query  amount by addr:     addr
+query  amount by addr:     emintcli   query  bank  balances $(emintcli  keys show mykey -a)   //通过account子命令需要检查一下；
 
 
 send token from addr to other: emintcli tx send [from_key_or_address] [to_address] [amount] [flags]
+
+
+emintcli tx send $(emintcli  keys show mykey -a)  $(emintcli  keys show wade -a)  10hale

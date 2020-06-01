@@ -59,6 +59,7 @@ func (c Context) EventManager() *EventManager { return c.eventManager }
 
 func (c Context) String() string {
 	indentBytes, _ := json.MarshalIndent(&c, "", "\t")
+
 	return string(indentBytes)
 }
 
