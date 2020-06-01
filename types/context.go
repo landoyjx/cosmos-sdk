@@ -2,7 +2,7 @@ package types
 
 import (
 	"context"
-	"encoding/json"
+	"fmt"
 	"time"
 
 	"github.com/gogo/protobuf/proto"
@@ -61,8 +61,7 @@ func (c Context) String() string {
 	// indentBytes, _ := json.MarshalIndent(c, "", "\t")
 	// return string(indentBytes)
 
-	fmt.Sprintf(`
-
+	return fmt.Sprintf(`
 		ctx           ：%v
 		ms            ：%v
 		header        ：%v
@@ -74,13 +73,10 @@ func (c Context) String() string {
 		checkTx       ：%v
 		recheckTx     ：%v
 		minGasPrice   ：%v
-		consParams    ：%v   
+		consParams    ：%v
 		eventManager
-		`，c.ctx,c.ms.GetStoreType(),c.header,c.chainID,c.txBytes,c.voteInfo,c.gasMeter,c.blockGasMeter,c.checkTx,
-	 c.recheckTx,c.minGasPrice,*c.consParams)
-
-
-
+		`, c.ctx, c.ms.GetStoreType(), c.header, c.chainID, c.txBytes, c.voteInfo, c.gasMeter, c.blockGasMeter, c.checkTx,
+		c.recheckTx, c.minGasPrice, *c.consParams)
 
 }
 
