@@ -1,6 +1,8 @@
 package mint
 
 import (
+	"fmt"
+
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/x/mint/types"
 )
@@ -20,6 +22,14 @@ func BeginBlocker(ctx sdk.Context, k Keeper) {
 
 	// mint coins, update supply
 	mintedCoin := minter.BlockProvision(params)
+
+	ctx.Logger().Info(fmt.Sprintf("block height: %v  mintedCoin: %v ", ctx.BlockHeader().Height, mintedCoin.String()))
+	// 63115200 10 years
+	// 120000000÷6311520= 19.0128526884
+	// mint coins, update supply
+	//	mintedCoin := sdk.NewInt64Coin(params.MintDenom, 19)
+	// mint coins, update supply
+
 	mintedCoins := sdk.NewCoins(mintedCoin)
 
 	err := k.MintCoins(ctx, mintedCoins)
