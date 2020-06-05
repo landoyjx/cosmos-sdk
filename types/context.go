@@ -2,6 +2,7 @@ package types
 
 import (
 	"context"
+	"fmt"
 	"time"
 
 	"github.com/gogo/protobuf/proto"
@@ -55,6 +56,29 @@ func (c Context) IsCheckTx() bool             { return c.checkTx }
 func (c Context) IsReCheckTx() bool           { return c.recheckTx }
 func (c Context) MinGasPrices() DecCoins      { return c.minGasPrice }
 func (c Context) EventManager() *EventManager { return c.eventManager }
+
+func (c Context) String() string {
+	// indentBytes, _ := json.MarshalIndent(c, "", "\t")
+	// return string(indentBytes)
+
+	return fmt.Sprintf(`
+		ctx           ：%v
+		ms            ：%v
+		header        ：%v
+		chainID       ：%v
+		txBytes       ：%v
+		voteInfo      ：%v
+		gasMeter      ： limit  %v consumed: %v
+		blockGasMeter ：%v
+		checkTx       ：%v
+		recheckTx     ：%v
+		minGasPrice   ：%v
+		consParams    ：%v
+		eventManager
+		`, c.ctx, c.ms.GetStoreType(), c.header, c.chainID, c.txBytes, c.voteInfo, c.gasMeter.Limit(),c.gasMeter.GasConsumed(), c.blockGasMeter, c.checkTx,
+		c.recheckTx, c.minGasPrice, *c.consParams)
+
+}
 
 // clone the header before returning
 func (c Context) BlockHeader() abci.Header {

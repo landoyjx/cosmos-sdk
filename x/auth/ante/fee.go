@@ -59,6 +59,9 @@ func (mfd MempoolFeeDecorator) AnteHandle(ctx sdk.Context, tx sdk.Tx, simulate b
 				requiredFees[i] = sdk.NewCoin(gp.Denom, fee.Ceil().RoundInt())
 			}
 
+			fmt.Printf("------------fee coins   :  %v  \n", feeCoins)
+			fmt.Printf("------------requiredFees:  %v  \n", requiredFees)
+
 			if !feeCoins.IsAnyGTE(requiredFees) {
 				return ctx, sdkerrors.Wrapf(sdkerrors.ErrInsufficientFee, "insufficient fees; got: %s required: %s", feeCoins, requiredFees)
 			}
@@ -85,6 +88,8 @@ func NewDeductFeeDecorator(ak keeper.AccountKeeper, sk types.SupplyKeeper) Deduc
 }
 
 func (dfd DeductFeeDecorator) AnteHandle(ctx sdk.Context, tx sdk.Tx, simulate bool, next sdk.AnteHandler) (newCtx sdk.Context, err error) {
+
+	fmt.Println("DeductFeeDecorator +++++++++++++++++++++++++++++++++++++++")
 	feeTx, ok := tx.(FeeTx)
 	if !ok {
 		return ctx, sdkerrors.Wrap(sdkerrors.ErrTxDecode, "Tx must be a FeeTx")
@@ -100,9 +105,10 @@ func (dfd DeductFeeDecorator) AnteHandle(ctx sdk.Context, tx sdk.Tx, simulate bo
 	if feePayerAcc == nil {
 		return ctx, sdkerrors.Wrapf(sdkerrors.ErrUnknownAddress, "fee payer address: %s does not exist", feePayer)
 	}
-
+	fmt.Printf("----------------------------------wade ante handler feePayerAcc: %v  Fee: %v \n", feePayer, feeTx.GetFee())
 	// deduct the fees
 	if !feeTx.GetFee().IsZero() {
+
 		err = DeductFees(dfd.supplyKeeper, ctx, feePayerAcc, feeTx.GetFee())
 		if err != nil {
 			return ctx, err

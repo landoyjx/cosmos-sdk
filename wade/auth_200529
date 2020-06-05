@@ -1,0 +1,35 @@
+
+进度：
+1. auth的genesis参数实在 type下定义的；
+
+const (
+	DefaultMaxMemoCharacters      uint64 = 256
+	DefaultTxSigLimit             uint64 = 7
+	DefaultTxSizeCostPerByte      uint64 = 10
+	DefaultSigVerifyCostED25519   uint64 = 590
+	DefaultSigVerifyCostSecp256k1 uint64 = 1000
+)
+
+
+2. 专链的节点调用cosmos sdk auth 的 InitGenesis生成genesis.json文件；
+    genesis 里给账号指定金额； ethermint里是另一个命令；
+
+3. ethermint full node 启动的时候，如果高度是 0 将会掉 auth module InitGenesis 接口，存下参数；  至于参数的后续修改，可能实在 gov里，目前还不确定。
+
+
+4. 每一个交易在执行的时候， ante 会根据上边的参数校验或计算； ethermint自己封装了这个接口兼容 evm的交易，我今天看了 auth 下ante的部分；
+   定义在  auth auth ante 下的 ante.go里(按顺序执行)； cosmos sdk baseapp run tx的时候，调用 AnteHandler
+
+
+
+暂时忽略：
+
+
+   其中的一个anteHandler  NewDeductFeeDecorator   SendCoinsFromAccountToModule   （auth/ante/fee.go）
+   目前不清楚supply keeper的作用；
+
+
+需要进一步的了解：
+
+   price在那里处理；
+   fee price gas

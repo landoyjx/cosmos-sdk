@@ -1,0 +1,12 @@
+
+进度：
+
+1. 分析了staking模块genesis参数；上下层的接口；
+2. 生成genesis create validator tx 逻辑；
+3. 确认了后期释放资产的逻辑，还没有测试；
+4. 准备了远程环境；
+
+需要进一步的事情：
+
+1. staking相关的交易；
+2. 和validator相关的模块；

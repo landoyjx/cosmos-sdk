@@ -1,0 +1,17 @@
+
+进度：
+
+1. 搭建了多个节点的genesis环境； 测试了create validator ;
+2. 分析了distribution给validator分fee；
+3. mint模块begin block增加了fee；
+
+暂时没有分析：
+
+资产转移、增发闭环的整个流程；
+
+
+需要进一步的事情：
+
+1. 先围绕资产在 bank supply distribution mint 模块的流程，以及关联的staking ；
+
+2. 然后弄 slashing  reward 取消validator.

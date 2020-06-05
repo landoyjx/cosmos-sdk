@@ -1,6 +1,7 @@
 package baseapp
 
 import (
+	"encoding/json"
 	"errors"
 	"fmt"
 	"reflect"
@@ -133,6 +134,22 @@ func NewBaseApp(
 	}
 
 	return app
+}
+
+func (app *BaseApp) String() string {
+	indentBytes, err := json.MarshalIndent(app, "", "\t")
+	if err != nil {
+		app.Logger().With("wade", "cosmos sdk baseapp string json").Error(err.Error())
+	}
+
+	// return fmt.Sprintf(`
+	//   Name          :  %v
+	// 	checkState    :  %v
+	// 	deliverState  :  %v
+	//   appVersion    :  %v
+	// 	`,app.name,*app.checkState,app.deliverState,app.appVersion)
+
+	return string(indentBytes)
 }
 
 // Name returns the name of the BaseApp.
@@ -459,9 +476,13 @@ func (app *BaseApp) runTx(mode runTxMode, txBytes []byte, tx sdk.Tx) (gInfo sdk.
 	// NOTE: GasWanted should be returned by the AnteHandler. GasUsed is
 	// determined by the GasMeter. We need access to the context to get the gas
 	// meter so we initialize upfront.
-	var gasWanted uint64
 
+	//app.logger.With("wade", "cosmos sdk baseapp runTx baseapp", "mode", mode).Info(app.String())
+
+	var gasWanted uint64
 	ctx := app.getContextForTx(mode, txBytes)
+	app.logger.With("wade", "cosmos sdk baseapp runTx ctx", "mode", mode).Info(ctx.String())
+
 	ms := ctx.MultiStore()
 
 	// only run the tx if there is block gas remaining
@@ -500,6 +521,8 @@ func (app *BaseApp) runTx(mode runTxMode, txBytes []byte, tx sdk.Tx) (gInfo sdk.
 		}
 
 		gInfo = sdk.GasInfo{GasWanted: gasWanted, GasUsed: ctx.GasMeter().GasConsumed()}
+		app.logger.With("wade", "cosmos sdk baseapp runTx ctx", "mode", mode).Info(fmt.Sprintf("GasWanted: %v   GasUsed: %v ", gasWanted, ctx.GasMeter().GasConsumed()))
+
 	}()
 
 	// If BlockGasMeter() panics it will be caught by the above recover and will
@@ -551,6 +574,7 @@ func (app *BaseApp) runTx(mode runTxMode, txBytes []byte, tx sdk.Tx) (gInfo sdk.
 
 		// GasMeter expected to be set in AnteHandler
 		gasWanted = ctx.GasMeter().Limit()
+		app.logger.With("wade", "cosmos sdk baseapp  runTx antiHandler").Info(fmt.Sprintf("gasWanted:  %v  ctx.GasMeter().Limit()", gasWanted))
 
 		if err != nil {
 			return gInfo, nil, err

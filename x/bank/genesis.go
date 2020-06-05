@@ -16,6 +16,7 @@ func InitGenesis(ctx sdk.Context, keeper Keeper, genState GenesisState) {
 			panic(err)
 		}
 
+		fmt.Printf("bank InitGenesis  addr:  %v  balance: %v \n", balance.Address, balance.Coins)
 		if err := keeper.SetBalances(ctx, balance.Address, balance.Coins); err != nil {
 			panic(fmt.Errorf("error on setting balances %w", err))
 		}
