@@ -1,0 +1,14 @@
+进度：
+
+1. 修复了delayed vesting account 编码问题；
+2. 修改Continuous 和 Periodic 编码；
+
+
+需要解决的事情：
+
+整理代码；
+
+
+需要进一步做的事：
+
+1.测试continuous vesting account 线性增加；
