@@ -1,0 +1,17 @@
+进度：
+
+1.测试continuous vesting account;
+2. query bank balances 返回值增加了spendable coins字段.
+3. 整理了代码；
+4. 分析了命令行通过gas price 计算fee.
+
+
+
+
+需要进一步做的事：
+
+1. 搭建一套环境；
+2. evm
+3. 测试delegation;
+4. updade模块
+5. 分析evidence slashing
