@@ -165,12 +165,17 @@ func GetBalancesCmd(cdc *codec.Codec) *cobra.Command {
 			}
 
 			if denom == "" {
-				var balances sdk.Coins
-				if err := cdc.UnmarshalJSON(res, &balances); err != nil {
+
+				balWithSpendable := struct {
+					Balances  sdk.Coins
+					Spendable sdk.Coins
+				}{}
+
+				if err := cdc.UnmarshalJSON(res, &balWithSpendable); err != nil {
 					return err
 				}
 
-				result = balances
+				result = balWithSpendable
 			} else {
 				var balance sdk.Coin
 				if err := cdc.UnmarshalJSON(res, &balance); err != nil {
