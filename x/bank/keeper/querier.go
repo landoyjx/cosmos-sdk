@@ -51,7 +51,17 @@ func queryAllBalance(ctx sdk.Context, req abci.RequestQuery, k Keeper) ([]byte, 
 
 	balances := k.GetAllBalances(ctx, params.Address)
 
-	bz, err := codec.MarshalJSONIndent(types.ModuleCdc, balances)
+	spendableBalances := k.SpendableCoins(ctx, params.Address)
+
+	allBalances := struct {
+		Balances  sdk.Coins
+		Spendable sdk.Coins
+	}{
+		balances,
+		spendableBalances,
+	}
+
+	bz, err := codec.MarshalJSONIndent(types.ModuleCdc, allBalances)
 	if err != nil {
 		return nil, sdkerrors.Wrap(sdkerrors.ErrJSONMarshal, err.Error())
 	}

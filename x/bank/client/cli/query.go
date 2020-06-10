@@ -73,12 +73,17 @@ func NewBalancesCmd(m codec.Marshaler) *cobra.Command {
 			}
 
 			if denom == "" {
-				var balances sdk.Coins
-				if err := m.UnmarshalJSON(res, &balances); err != nil {
+				//var balances sdk.Coins
+				allBalances := struct {
+					Balances  sdk.Coins
+					Spendable sdk.Coins
+				}{}
+
+				if err := m.UnmarshalJSON(res, &allBalances); err != nil {
 					return err
 				}
 
-				result = balances
+				result = allBalances
 			} else {
 				var balance sdk.Coin
 				if err := m.UnmarshalJSON(res, &balance); err != nil {
