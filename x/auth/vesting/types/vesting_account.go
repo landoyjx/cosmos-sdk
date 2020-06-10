@@ -1,6 +1,7 @@
 package types
 
 import (
+	"encoding/json"
 	"errors"
 	"time"
 
@@ -9,6 +10,7 @@ import (
 	authexported "github.com/cosmos/cosmos-sdk/x/auth/exported"
 	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
 	vestexported "github.com/cosmos/cosmos-sdk/x/auth/vesting/exported"
+	tmamino "github.com/tendermint/tendermint/crypto/encoding/amino"
 
 	"github.com/tendermint/tendermint/crypto"
 	"gopkg.in/yaml.v2"
@@ -182,6 +184,21 @@ type vestingAccountYAML struct {
 type vestingAccountJSON struct {
 	Address          sdk.AccAddress `json:"address" yaml:"address"`
 	PubKey           crypto.PubKey  `json:"public_key" yaml:"public_key"`
+	AccountNumber    uint64         `json:"account_number" yaml:"account_number"`
+	Sequence         uint64         `json:"sequence" yaml:"sequence"`
+	OriginalVesting  sdk.Coins      `json:"original_vesting" yaml:"original_vesting"`
+	DelegatedFree    sdk.Coins      `json:"delegated_free" yaml:"delegated_free"`
+	DelegatedVesting sdk.Coins      `json:"delegated_vesting" yaml:"delegated_vesting"`
+	EndTime          int64          `json:"end_time" yaml:"end_time"`
+
+	// custom fields based on concrete vesting type which can be omitted
+	StartTime      int64   `json:"start_time,omitempty" yaml:"start_time,omitempty"`
+	VestingPeriods Periods `json:"vesting_periods,omitempty" yaml:"vesting_periods,omitempty"`
+}
+
+type vestingAccountJSONPubKeyBytes struct {
+	Address          sdk.AccAddress `json:"address" yaml:"address"`
+	PubKey           []byte         `json:"public_key" yaml:"public_key"`
 	AccountNumber    uint64         `json:"account_number" yaml:"account_number"`
 	Sequence         uint64         `json:"sequence" yaml:"sequence"`
 	OriginalVesting  sdk.Coins      `json:"original_vesting" yaml:"original_vesting"`
@@ -386,40 +403,40 @@ func (cva ContinuousVestingAccount) MarshalYAML() (interface{}, error) {
 }
 
 // MarshalJSON returns the JSON representation of a ContinuousVestingAccount.
-func (cva ContinuousVestingAccount) MarshalJSON() ([]byte, error) {
-	alias := vestingAccountJSON{
-		Address:          cva.Address,
-		PubKey:           cva.GetPubKey(),
-		AccountNumber:    cva.AccountNumber,
-		Sequence:         cva.Sequence,
-		OriginalVesting:  cva.OriginalVesting,
-		DelegatedFree:    cva.DelegatedFree,
-		DelegatedVesting: cva.DelegatedVesting,
-		EndTime:          cva.EndTime,
-		StartTime:        cva.StartTime,
-	}
-
-	return codec.Cdc.MarshalJSON(alias)
-}
-
-// UnmarshalJSON unmarshals raw JSON bytes into a ContinuousVestingAccount.
-func (cva *ContinuousVestingAccount) UnmarshalJSON(bz []byte) error {
-	var alias vestingAccountJSON
-	if err := codec.Cdc.UnmarshalJSON(bz, &alias); err != nil {
-		return err
-	}
-
-	cva.BaseVestingAccount = &BaseVestingAccount{
-		BaseAccount:      authtypes.NewBaseAccount(alias.Address, alias.PubKey, alias.AccountNumber, alias.Sequence),
-		OriginalVesting:  alias.OriginalVesting,
-		DelegatedFree:    alias.DelegatedFree,
-		DelegatedVesting: alias.DelegatedVesting,
-		EndTime:          alias.EndTime,
-	}
-	cva.StartTime = alias.StartTime
-
-	return nil
-}
+// func (cva ContinuousVestingAccount) MarshalJSON() ([]byte, error) {
+// 	alias := vestingAccountJSON{
+// 		Address:          cva.Address,
+// 		PubKey:           cva.GetPubKey(),
+// 		AccountNumber:    cva.AccountNumber,
+// 		Sequence:         cva.Sequence,
+// 		OriginalVesting:  cva.OriginalVesting,
+// 		DelegatedFree:    cva.DelegatedFree,
+// 		DelegatedVesting: cva.DelegatedVesting,
+// 		EndTime:          cva.EndTime,
+// 		StartTime:        cva.StartTime,
+// 	}
+//
+// 	return codec.Cdc.MarshalJSON(alias)
+// }
+//
+// // UnmarshalJSON unmarshals raw JSON bytes into a ContinuousVestingAccount.
+// func (cva *ContinuousVestingAccount) UnmarshalJSON(bz []byte) error {
+// 	var alias vestingAccountJSON
+// 	if err := codec.Cdc.UnmarshalJSON(bz, &alias); err != nil {
+// 		return err
+// 	}
+//
+// 	cva.BaseVestingAccount = &BaseVestingAccount{
+// 		BaseAccount:      authtypes.NewBaseAccount(alias.Address, alias.PubKey, alias.AccountNumber, alias.Sequence),
+// 		OriginalVesting:  alias.OriginalVesting,
+// 		DelegatedFree:    alias.DelegatedFree,
+// 		DelegatedVesting: alias.DelegatedVesting,
+// 		EndTime:          alias.EndTime,
+// 	}
+// 	cva.StartTime = alias.StartTime
+//
+// 	return nil
+// }
 
 //-----------------------------------------------------------------------------
 // Periodic Vesting Account
@@ -575,43 +592,43 @@ func (pva PeriodicVestingAccount) MarshalYAML() (interface{}, error) {
 	return string(bz), err
 }
 
-// MarshalJSON returns the JSON representation of a PeriodicVestingAccount.
-func (pva PeriodicVestingAccount) MarshalJSON() ([]byte, error) {
-	alias := vestingAccountJSON{
-		Address:          pva.Address,
-		PubKey:           pva.GetPubKey(),
-		AccountNumber:    pva.AccountNumber,
-		Sequence:         pva.Sequence,
-		OriginalVesting:  pva.OriginalVesting,
-		DelegatedFree:    pva.DelegatedFree,
-		DelegatedVesting: pva.DelegatedVesting,
-		EndTime:          pva.EndTime,
-		StartTime:        pva.StartTime,
-		VestingPeriods:   pva.VestingPeriods,
-	}
-
-	return codec.Cdc.MarshalJSON(alias)
-}
-
-// UnmarshalJSON unmarshals raw JSON bytes into a PeriodicVestingAccount.
-func (pva *PeriodicVestingAccount) UnmarshalJSON(bz []byte) error {
-	var alias vestingAccountJSON
-	if err := codec.Cdc.UnmarshalJSON(bz, &alias); err != nil {
-		return err
-	}
-
-	pva.BaseVestingAccount = &BaseVestingAccount{
-		BaseAccount:      authtypes.NewBaseAccount(alias.Address, alias.PubKey, alias.AccountNumber, alias.Sequence),
-		OriginalVesting:  alias.OriginalVesting,
-		DelegatedFree:    alias.DelegatedFree,
-		DelegatedVesting: alias.DelegatedVesting,
-		EndTime:          alias.EndTime,
-	}
-	pva.StartTime = alias.StartTime
-	pva.VestingPeriods = alias.VestingPeriods
-
-	return nil
-}
+// // MarshalJSON returns the JSON representation of a PeriodicVestingAccount.
+// func (pva PeriodicVestingAccount) MarshalJSON() ([]byte, error) {
+// 	alias := vestingAccountJSON{
+// 		Address:          pva.Address,
+// 		PubKey:           pva.GetPubKey(),
+// 		AccountNumber:    pva.AccountNumber,
+// 		Sequence:         pva.Sequence,
+// 		OriginalVesting:  pva.OriginalVesting,
+// 		DelegatedFree:    pva.DelegatedFree,
+// 		DelegatedVesting: pva.DelegatedVesting,
+// 		EndTime:          pva.EndTime,
+// 		StartTime:        pva.StartTime,
+// 		VestingPeriods:   pva.VestingPeriods,
+// 	}
+//
+// 	return codec.Cdc.MarshalJSON(alias)
+// }
+//
+// // UnmarshalJSON unmarshals raw JSON bytes into a PeriodicVestingAccount.
+// func (pva *PeriodicVestingAccount) UnmarshalJSON(bz []byte) error {
+// 	var alias vestingAccountJSON
+// 	if err := codec.Cdc.UnmarshalJSON(bz, &alias); err != nil {
+// 		return err
+// 	}
+//
+// 	pva.BaseVestingAccount = &BaseVestingAccount{
+// 		BaseAccount:      authtypes.NewBaseAccount(alias.Address, alias.PubKey, alias.AccountNumber, alias.Sequence),
+// 		OriginalVesting:  alias.OriginalVesting,
+// 		DelegatedFree:    alias.DelegatedFree,
+// 		DelegatedVesting: alias.DelegatedVesting,
+// 		EndTime:          alias.EndTime,
+// 	}
+// 	pva.StartTime = alias.StartTime
+// 	pva.VestingPeriods = alias.VestingPeriods
+//
+// 	return nil
+// }
 
 //-----------------------------------------------------------------------------
 // Delayed Vesting Account
@@ -680,36 +697,197 @@ func (dva DelayedVestingAccount) String() string {
 	return out.(string)
 }
 
+// // MarshalJSON returns the JSON representation of a DelayedVestingAccount.
+// func (dva DelayedVestingAccount) MarshalJSON() ([]byte, error) {
+// 	alias := vestingAccountJSON{
+// 		Address:          dva.Address,
+// 		PubKey:           dva.GetPubKey(),
+// 		AccountNumber:    dva.AccountNumber,
+// 		Sequence:         dva.Sequence,
+// 		OriginalVesting:  dva.OriginalVesting,
+// 		DelegatedFree:    dva.DelegatedFree,
+// 		DelegatedVesting: dva.DelegatedVesting,
+// 		EndTime:          dva.EndTime,
+// 	}
+//
+// 	return codec.Cdc.MarshalJSON(alias)
+// }
+//
+// // UnmarshalJSON unmarshals raw JSON bytes into a DelayedVestingAccount.
+// func (dva *DelayedVestingAccount) UnmarshalJSON(bz []byte) error {
+// 	var alias vestingAccountJSON
+// 	if err := codec.Cdc.UnmarshalJSON(bz, &alias); err != nil {
+// 		return err
+// 	}
+//
+// 	dva.BaseVestingAccount = &BaseVestingAccount{
+// 		BaseAccount:      authtypes.NewBaseAccount(alias.Address, alias.PubKey, alias.AccountNumber, alias.Sequence),
+// 		OriginalVesting:  alias.OriginalVesting,
+// 		DelegatedFree:    alias.DelegatedFree,
+// 		DelegatedVesting: alias.DelegatedVesting,
+// 		EndTime:          alias.EndTime,
+// 	}
+//
+// 	return nil
+// }
+
 // MarshalJSON returns the JSON representation of a DelayedVestingAccount.
 func (dva DelayedVestingAccount) MarshalJSON() ([]byte, error) {
-	alias := vestingAccountJSON{
+	alias := vestingAccountJSONPubKeyBytes{
 		Address:          dva.Address,
-		PubKey:           dva.GetPubKey(),
 		AccountNumber:    dva.AccountNumber,
 		Sequence:         dva.Sequence,
 		OriginalVesting:  dva.OriginalVesting,
 		DelegatedFree:    dva.DelegatedFree,
 		DelegatedVesting: dva.DelegatedVesting,
 		EndTime:          dva.EndTime,
+		PubKey:           dva.PubKey,
 	}
 
-	return codec.Cdc.MarshalJSON(alias)
+	return json.Marshal(alias)
+
 }
 
 // UnmarshalJSON unmarshals raw JSON bytes into a DelayedVestingAccount.
 func (dva *DelayedVestingAccount) UnmarshalJSON(bz []byte) error {
-	var alias vestingAccountJSON
-	if err := codec.Cdc.UnmarshalJSON(bz, &alias); err != nil {
+	var alias vestingAccountJSONPubKeyBytes
+
+	if err := json.Unmarshal(bz, &alias); err != nil {
 		return err
 	}
 
+	acc := new(authtypes.BaseAccount)
+
+	if alias.PubKey != nil {
+		pubk, err := tmamino.PubKeyFromBytes(alias.PubKey)
+		if err != nil {
+			return err
+		}
+
+		acc.PubKey = pubk.Bytes()
+	}
+
+	acc.Address = alias.Address
+	acc.AccountNumber = alias.AccountNumber
+	acc.Sequence = alias.Sequence
+
 	dva.BaseVestingAccount = &BaseVestingAccount{
-		BaseAccount:      authtypes.NewBaseAccount(alias.Address, alias.PubKey, alias.AccountNumber, alias.Sequence),
+		BaseAccount:      acc,
 		OriginalVesting:  alias.OriginalVesting,
 		DelegatedFree:    alias.DelegatedFree,
 		DelegatedVesting: alias.DelegatedVesting,
 		EndTime:          alias.EndTime,
 	}
+
+	return nil
+}
+
+//PeriodicVestingAccount
+
+// MarshalJSON returns the JSON representation of a DelayedVestingAccount.
+func (dva PeriodicVestingAccount) MarshalJSON() ([]byte, error) {
+	alias := vestingAccountJSONPubKeyBytes{
+		Address:          dva.Address,
+		AccountNumber:    dva.AccountNumber,
+		Sequence:         dva.Sequence,
+		OriginalVesting:  dva.OriginalVesting,
+		DelegatedFree:    dva.DelegatedFree,
+		DelegatedVesting: dva.DelegatedVesting,
+		EndTime:          dva.EndTime,
+		PubKey:           dva.PubKey,
+		StartTime:        dva.StartTime,
+		VestingPeriods:   dva.VestingPeriods,
+	}
+
+	return json.Marshal(alias)
+
+}
+
+// UnmarshalJSON unmarshals raw JSON bytes into a DelayedVestingAccount.
+func (dva *PeriodicVestingAccount) UnmarshalJSON(bz []byte) error {
+	var alias vestingAccountJSONPubKeyBytes
+
+	if err := json.Unmarshal(bz, &alias); err != nil {
+		return err
+	}
+
+	acc := new(authtypes.BaseAccount)
+
+	if alias.PubKey != nil {
+		pubk, err := tmamino.PubKeyFromBytes(alias.PubKey)
+		if err != nil {
+			return err
+		}
+
+		acc.PubKey = pubk.Bytes()
+	}
+
+	acc.Address = alias.Address
+	acc.AccountNumber = alias.AccountNumber
+	acc.Sequence = alias.Sequence
+
+	dva.BaseVestingAccount = &BaseVestingAccount{
+		BaseAccount:      acc,
+		OriginalVesting:  alias.OriginalVesting,
+		DelegatedFree:    alias.DelegatedFree,
+		DelegatedVesting: alias.DelegatedVesting,
+		EndTime:          alias.EndTime,
+	}
+	dva.VestingPeriods = alias.VestingPeriods
+	dva.StartTime = alias.StartTime
+
+	return nil
+}
+
+// MarshalJSON returns the JSON representation of a ContinuousVestingAccount.
+func (cva *ContinuousVestingAccount) MarshalJSON() ([]byte, error) {
+	alias := vestingAccountJSONPubKeyBytes{
+		Address:          cva.Address,
+		AccountNumber:    cva.AccountNumber,
+		Sequence:         cva.Sequence,
+		OriginalVesting:  cva.OriginalVesting,
+		DelegatedFree:    cva.DelegatedFree,
+		DelegatedVesting: cva.DelegatedVesting,
+		EndTime:          cva.EndTime,
+		PubKey:           cva.PubKey,
+		StartTime:        cva.StartTime,
+	}
+
+	return json.Marshal(alias)
+}
+
+// UnmarshalJSON unmarshals raw JSON bytes into a ContinuousVestingAccount.
+func (cva *ContinuousVestingAccount) UnmarshalJSON(bz []byte) error {
+	var alias vestingAccountJSONPubKeyBytes
+
+	if err := json.Unmarshal(bz, &alias); err != nil {
+		return err
+	}
+
+	acc := new(authtypes.BaseAccount)
+
+	if alias.PubKey != nil {
+		pubk, err := tmamino.PubKeyFromBytes(alias.PubKey)
+		if err != nil {
+			return err
+		}
+
+		acc.PubKey = pubk.Bytes()
+	}
+
+	acc.Address = alias.Address
+	acc.AccountNumber = alias.AccountNumber
+	acc.Sequence = alias.Sequence
+
+	cva.BaseVestingAccount = &BaseVestingAccount{
+		BaseAccount:      acc,
+		OriginalVesting:  alias.OriginalVesting,
+		DelegatedFree:    alias.DelegatedFree,
+		DelegatedVesting: alias.DelegatedVesting,
+		EndTime:          alias.EndTime,
+	}
+
+	cva.StartTime = alias.StartTime
 
 	return nil
 }
