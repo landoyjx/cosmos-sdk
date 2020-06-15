@@ -1,0 +1,12 @@
+进度：
+
+1. 调试了metamask 查询 转账 （手续费低的时候，链会挂掉；）
+2. 尝试了通过truffle部署智能合约，truffle部署时获取的地址不对；
+3. 分析metamask 低手续费交易，节点挂掉的原因；(消耗的gas大于gas limit引起;)
+4. geth console 调ethermint接口有问题；
+
+
+需要进一步做的事情：
+
+1. 排查evm交易 消耗的gas大于gas limit； 这块涉及到evm的ante，之前分析过除了evm其他交易的ante正常情况是不会出现消耗的gas大于gas limit。
+2. 调试部署ERC20合约。
