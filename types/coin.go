@@ -587,7 +587,8 @@ var (
 	reSpc       = `[[:space:]]*`
 	reDnm       = regexp.MustCompile(fmt.Sprintf(`^%s$`, reDnmString))
 	reCoin      = regexp.MustCompile(fmt.Sprintf(`^(%s)%s(%s)$`, reAmt, reSpc, reDnmString))
-	reDecCoin   = regexp.MustCompile(fmt.Sprintf(`^(%s)%s(%s)$`, reDecAmt, reSpc, reDnmString))
+        // all use reDnm, no decimal
+	reDecCoin   = regexp.MustCompile(fmt.Sprintf(`^(%s)%s(%s)$`, reAmt, reSpc, reDnmString))
 )
 
 // ValidateDenom validates a denomination string returning an error if it is
