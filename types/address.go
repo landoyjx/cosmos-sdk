@@ -226,6 +226,8 @@ func (aa AccAddress) String() string {
 
 	bech32PrefixAccAddr := GetConfig().GetBech32AccountAddrPrefix()
 
+	fmt.Printf("bech32PrefixAccAddr:  %v \n", bech32PrefixAccAddr)
+
 	bech32Addr, err := bech32.ConvertAndEncode(bech32PrefixAccAddr, aa.Bytes())
 	if err != nil {
 		panic(err)
