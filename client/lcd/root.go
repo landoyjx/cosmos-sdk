@@ -1,13 +1,14 @@
 package lcd
 
 import (
-	"fmt"
 	"net"
 	"net/http"
 	"os"
 	"time"
 
-	"github.com/gorilla/handlers"
+	"github.com/rs/cors"
+
+	//"github.com/gorilla/handlers"
 	"github.com/gorilla/mux"
 	"github.com/rakyll/statik/fs"
 	"github.com/spf13/cobra"
@@ -47,7 +48,7 @@ func NewRestServer(cdc *codec.Codec) *RestServer {
 }
 
 // Start starts the rest server
-func (rs *RestServer) Start(listenAddr string, maxOpen int, readTimeout, writeTimeout uint, cors bool) (err error) {
+func (rs *RestServer) Start(listenAddr string, maxOpen int, readTimeout, writeTimeout uint, corsEnable bool) (err error) {
 	server.TrapSignal(func() {
 		err := rs.listener.Close()
 		rs.log.Error("error closing listener", "err", err)
@@ -62,16 +63,16 @@ func (rs *RestServer) Start(listenAddr string, maxOpen int, readTimeout, writeTi
 	if err != nil {
 		return
 	}
-	rs.log.Info(
-		fmt.Sprintf(
-			"Starting application REST service (chain-id: %q)...",
-			viper.GetString(flags.FlagChainID),
-		),
-	)
+
+	rs.log.Info("Starting application REST service","chain-id",viper.GetString(flags.FlagChainID),"coresEnable",corsEnable)
 
 	var h http.Handler = rs.Mux
-	if cors {
-		return rpcserver.StartHTTPServer(rs.listener, handlers.CORS()(h), rs.log, cfg)
+	if corsEnable {
+		c := cors.New(cors.Options{
+			AllowedOrigins: []string{"*"},
+		})
+		return rpcserver.StartHTTPServer(rs.listener, c.Handler(h), rs.log, cfg)
+		//return rpcserver.StartHTTPServer(rs.listener, handlers.CORS()(h), rs.log, cfg)
 	}
 
 	return rpcserver.StartHTTPServer(rs.listener, rs.Mux, rs.log, cfg)
