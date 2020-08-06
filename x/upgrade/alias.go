@@ -3,6 +3,7 @@ package upgrade
 // nolint
 
 import (
+	"github.com/cosmos/cosmos-sdk/x/upgrade/client"
 	"github.com/cosmos/cosmos-sdk/x/upgrade/keeper"
 	"github.com/cosmos/cosmos-sdk/x/upgrade/types"
 )
@@ -30,6 +31,7 @@ var (
 	UpgradeStoreLoader               = types.UpgradeStoreLoader
 	NewKeeper                        = keeper.NewKeeper
 	NewQuerier                       = keeper.NewQuerier
+	ProposalHandler                  = client.ProposalHandler
 )
 
 type (
