@@ -144,7 +144,7 @@ func startStandAlone(ctx *Context, appCreator AppCreator) error {
 		return err
 	}
 
-	app := appCreator(ctx.Logger, db, traceWriter)
+	app := appCreator(ctx.Logger, db, traceWriter, ctx.Viper)
 
 	svr, err := server.NewServer(addr, "socket", app)
 	if err != nil {
