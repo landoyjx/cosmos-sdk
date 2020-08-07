@@ -6,6 +6,7 @@ import (
 	"os"
 	"path/filepath"
 
+	abci "github.com/tendermint/tendermint/abci/types"
 	"github.com/tendermint/tendermint/libs/log"
 	tmtypes "github.com/tendermint/tendermint/types"
 	dbm "github.com/tendermint/tm-db"
@@ -26,13 +27,13 @@ import (
 // application using various configurations.
 
 type (
-	AppOptions interface {
-		Get(string) interface{}
-	}
+	// AppOptions interface {
+	// 	Get(string) interface{}
+	// }
 	// AppCreator is a function that allows us to lazily initialize an
 	// application using various configurations.
-	//AppCreator func(log.Logger, dbm.DB, io.Writer) abci.Application
-	AppCreator func(log.Logger, dbm.DB, io.Writer, AppOptions) Application
+	AppCreator func(log.Logger, dbm.DB, io.Writer) abci.Application
+	//AppCreator func(log.Logger, dbm.DB, io.Writer, AppOptions) abci.Application
 
 	// AppExporter is a function that dumps all app state to
 	// JSON-serializable structure and returns the current validator set.

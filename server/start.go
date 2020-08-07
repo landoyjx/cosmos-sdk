@@ -144,7 +144,7 @@ func startStandAlone(ctx *Context, appCreator AppCreator) error {
 		return err
 	}
 
-	app := appCreator(ctx.Logger, db, traceWriter, ctx.Viper)
+	app := appCreator(ctx.Logger, db, traceWriter)
 
 	svr, err := server.NewServer(addr, "socket", app)
 	if err != nil {
@@ -185,7 +185,7 @@ func startInProcess(ctx *Context, appCreator AppCreator) (*node.Node, error) {
 		return nil, err
 	}
 
-	app := appCreator(ctx.Logger, db, traceWriter, ctx.Viper)
+	app := appCreator(ctx.Logger, db, traceWriter)
 
 	nodeKey, err := p2p.LoadOrGenNodeKey(cfg.NodeKeyFile())
 	if err != nil {
