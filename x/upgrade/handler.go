@@ -18,7 +18,9 @@ func NewSoftwareUpgradeProposalHandler(k Keeper) govtypes.Handler {
 		case CancelSoftwareUpgradeProposal:
 			ctx.Logger().Info("CancelSoftwareUpgradeProposal")
 			return handleCancelSoftwareUpgradeProposal(ctx, k, c)
-
+		case *SoftwareUpgradeProposal:
+			ctx.Logger().Info("SoftwareUpgradeProposal point")
+			return handleSoftwareUpgradeProposal(ctx, k, *c)
 		default:
 			return sdkerrors.Wrapf(sdkerrors.ErrUnknownRequest, "unrecognized software upgrade proposal content type: %T", c)
 		}
