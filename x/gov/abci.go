@@ -71,6 +71,7 @@ func EndBlocker(ctx sdk.Context, keeper Keeper) {
 				// write state to the underlying multi-store
 				writeCache()
 			} else {
+				ctx.Logger().Info("proposal", "hanlder err", err.Error())
 				proposal.Status = StatusFailed
 				tagValue = types.AttributeValueProposalFailed
 				logMsg = fmt.Sprintf("passed, but failed on execution: %s", err)
