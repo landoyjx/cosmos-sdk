@@ -48,6 +48,8 @@ func EndBlocker(ctx sdk.Context, keeper Keeper) {
 		}
 
 		if passes {
+
+			ctx.Logger().Info("proposal", "proposal.ProposalRoute()", proposal.ProposalRoute(), "HasRoute", keeper.Router().HasRoute(proposal.ProposalRoute()))
 			handler := keeper.Router().GetRoute(proposal.ProposalRoute())
 			cacheCtx, writeCache := ctx.CacheContext()
 
