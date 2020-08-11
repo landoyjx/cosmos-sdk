@@ -49,7 +49,6 @@ func EndBlocker(ctx sdk.Context, keeper Keeper) {
 
 		if passes {
 
-			ctx.Logger().Info("proposal", "proposal.ProposalRoute()", proposal.ProposalRoute(), "HasRoute", keeper.Router().HasRoute(proposal.ProposalRoute()))
 			handler := keeper.Router().GetRoute(proposal.ProposalRoute())
 			cacheCtx, writeCache := ctx.CacheContext()
 
@@ -71,7 +70,7 @@ func EndBlocker(ctx sdk.Context, keeper Keeper) {
 				// write state to the underlying multi-store
 				writeCache()
 			} else {
-				ctx.Logger().Info("proposal", "hanlder err", err.Error())
+				ctx.Logger().Error("proposal", "hanlder err", err.Error())
 				proposal.Status = StatusFailed
 				tagValue = types.AttributeValueProposalFailed
 				logMsg = fmt.Sprintf("passed, but failed on execution: %s", err)

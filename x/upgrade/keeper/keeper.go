@@ -55,8 +55,6 @@ func (k Keeper) SetUpgradeHandler(name string, upgradeHandler types.UpgradeHandl
 // (implicitly cancelling the current plan)
 func (k Keeper) ScheduleUpgrade(ctx sdk.Context, plan types.Plan) error {
 
-	ctx.Logger().Info("ScheduleUpgrade", "plan_name", plan.Name, "plan_time", plan.Time, "plan_heght", plan.Height, "plan_Info", plan.Info)
-
 	if err := plan.ValidateBasic(); err != nil {
 		return err
 	}
